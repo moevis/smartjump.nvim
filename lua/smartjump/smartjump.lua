@@ -4,6 +4,8 @@ local finders = require("telescope.finders")
 local action_set = require("telescope.actions.set")
 local action_state = require("telescope.actions.state")
 
+-- README.md
+
 local themes = require('telescope.themes')
 local local_opt = { 
   telescope = {
