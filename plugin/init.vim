@@ -1,1 +1,1 @@
-command! GoToFile lua require("smartjump").ListFileUnderCursor()
+command! GoToFile lua require("smartjump").ListFilesUnderCursor()
