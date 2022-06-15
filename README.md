@@ -6,6 +6,10 @@ Advanced `gf` command for neovim.
 
 ## Screenshot
 
+There are several `main.go` file in the project, smartjump will find it in all folders defined by `path` variable, and show them with line number awareness.
+
+![smartjump](https://user-images.githubusercontent.com/3747445/173917178-22eabbd8-4f07-4e76-98c9-ba4528c0e243.gif)
+
 ## Installation and Setup
 
 Using packer:
