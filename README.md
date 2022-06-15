@@ -22,6 +22,8 @@ require("smartjump").setup({
   telescope = {
     prompt_title = "Go To File",
   },
+  -- or require("telescope.themes").get_dropdown()/.get_ivy()/.get_cursor()
+  theme = nil,
 })
 ```
 
