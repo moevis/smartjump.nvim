@@ -4,9 +4,7 @@ local finders = require("telescope.finders")
 local action_set = require("telescope.actions.set")
 local action_state = require("telescope.actions.state")
 
--- README.md
-
-local themes = require('telescope.themes')
+-- local themes = require('telescope.themes')
 local local_opt = { 
   telescope = {
     prompt_title = "Go To File",
@@ -15,7 +13,15 @@ local local_opt = {
   theme = nil,
 }
 
-local function selectFileUI(items, opts)
+-- trim './' prefix
+local function trim_prefix(file_path)
+  if string.sub(file_path, 1, 2) == "./" then
+    return string.sub(file_path, 3)
+  end
+  return file_path
+end
+
+local function select_files(items, opts)
 	pickers.new(opts, {
 		finder = finders.new_table({
 			results = items,
@@ -55,7 +61,7 @@ local function split(s, delimiter)
 	return result
 end
 
-local function fileExist(name)
+local function file_exists(name)
 	local cursor = io.open(name, "r")
 	if cursor == nil then
 		return false
@@ -122,20 +128,21 @@ function ListFilesUnderCursor(opt)
 	end
 
 	local options = {}
-	local optionMap = {}
-
-	if fileExist(file) then
-		table.insert(options, { path = file, lnum = row, col = col })
-	end
+	local file_map = {}
 
 	if string.sub(file, 1, 1) == "/" then
 		file = file.sub(file, 2)
 	end
 
-	if #vim.o.path == 0 then
-		vim.notify("no path defined")
-		return
+	if file_exists(file) then
+    file_map[file] = true
+		table.insert(options, { path = file, lnum = row, col = col })
 	end
+
+	-- if #vim.o.path == 0 then
+	-- 	vim.notify("no path defined")
+	-- 	return
+	-- end
 
 	local folders = split(vim.o.path, ",")
 	for _, folder in ipairs(folders) do
@@ -143,13 +150,13 @@ function ListFilesUnderCursor(opt)
 			if string.sub(folder, -1) ~= "/" then
 				folder = folder .. "/"
 			end
-			local fullpath = vim.fn.simplify(folder .. file)
-			if optionMap[fullpath] then
+			local fullpath = trim_prefix(vim.fn.simplify(folder .. file))
+			if file_map[fullpath] then
 				goto continue
 			end
-			if fileExist(fullpath) then
+			if file_exists(fullpath) then
 				table.insert(options, { path = fullpath, lnum = row, col = col })
-				optionMap[fullpath] = true
+				file_map[fullpath] = true
 			end
 		end
 		::continue::
@@ -170,11 +177,8 @@ function ListFilesUnderCursor(opt)
 		end
 	end
 
-	selectFileUI(options, opt)
+	select_files(options, opt)
 end
-
--- vim.keymap.set("n", "gl", ":lua ListFilesUnderCursor()<cr>", nil)
---
 
 local function setup(opt)
 	local_opt = vim.tbl_extend("force", local_opt, opt)
